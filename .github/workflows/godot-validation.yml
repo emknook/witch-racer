@@ -11,8 +11,12 @@ permissions:
 
 jobs:
   validate:
-    name: Import and smoke test (Godot 4.7.2)
-    runs-on: ubuntu-24.04
+    name: Determinism and smoke test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
     steps:
@@ -20,17 +24,45 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install required utilities
+        if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y unzip
 
       - name: Install pinned Godot
+        if: runner.os == 'Linux'
         run: bash scripts/setup-godot.sh
 
+      - name: Install pinned Godot (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/setup-godot.ps1
+
       - name: Import Godot project
+        if: runner.os == 'Linux'
         run: |
           GODOT=".tools/godot/$(cat .godot-version)/godot"
           "$GODOT" --headless --editor --path game --import --quit
 
       - name: Smoke test main scene
+        if: runner.os == 'Linux'
         run: |
           GODOT=".tools/godot/$(cat .godot-version)/godot"
           "$GODOT" --headless --path game --quit-after 30
+
+      - name: Verify golden replay (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          GODOT=".tools/godot/$(cat .godot-version)/godot"
+          "$GODOT" --headless --path game --script res://tests/test_determinism.gd
+
+      - name: Import, smoke test and verify golden replay (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = (Get-Content .godot-version -Raw).Trim()
+          $godot = ".tools/godot/$version/godot.exe"
+          & $godot --headless --editor --path game --import --quit | Out-Host
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $godot --headless --path game --quit-after 30 | Out-Host
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $godot --headless --path game --script res://tests/test_determinism.gd | Out-Host
+          exit $LASTEXITCODE

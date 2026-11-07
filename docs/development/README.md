@@ -26,9 +26,9 @@ Use `pwsh -File scripts/setup-godot.ps1` if running PowerShell 7. PowerShell's d
 
 ## Continuous integration
 
-[`godot-validation.yml`](../../.github/workflows/godot-validation.yml) runs on pushes to `main`, pull requests and manual dispatch. It downloads the pinned engine on a GitHub-hosted Ubuntu runner, imports the Godot project headlessly, and runs a short scene smoke test.
+[`godot-validation.yml`](../../.github/workflows/godot-validation.yml) runs on pushes to `main`, pull requests and manual dispatch. Its Windows and Ubuntu jobs download the pinned engine, import the Godot project headlessly, smoke-test the main scene and compare the deterministic replay against the same checked-in golden digest.
 
-**Limitations:** These checks are not gameplay tests and do not export distributable builds. They do not validate feel, gamepad input or Windows runtime behavior. CI will only appear after the workflow file is present on GitHub and runs are permitted by repository settings.
+**Limitations:** Replay tests cover simulation rules, not interactive feel, graphics or gamepad hardware. These checks do not export distributable builds. CI will only appear after the workflow file is present on GitHub and runs are permitted by repository settings. See the [simulation contract and local test commands](../architecture/deterministic-simulation.md).
 
 ## Updating the engine
 
@@ -36,4 +36,4 @@ Update `.godot-version` only after confirming a new **stable** release and testi
 
 ## Known validation gap
 
-These scripts and workflow were authored without executing the GitHub Actions workflow. Verify the first CI run and adjust if it reveals project or runner issues.
+The original Linux workflow passed on GitHub. The expanded Windows/Linux determinism matrix has not yet run on GitHub; local deterministic replay checks pass on Windows.
