@@ -4,6 +4,7 @@
 - Players should be able to record and race against a **ghost** of a previous run.
 - **Walpurgis appears primarily in special story sequences and special races**, not as a permanent pursuer in ordinary races.
 - Walpurgis's speed and racing route may reuse recorded player ghost data, including runs the player could realistically complete.
+- **Confirmed encounter behavior:** In special races, Walpurgis pursues racers from behind; being caught is the danger. She is not a head-to-head finish-line rival.
 
 ## Proposed design
 
@@ -17,7 +18,7 @@ Use a versioned ghost format with track ID, track layout revision/hash, game ver
 Render a non-colliding translucent racer with interpolated transforms. Playback uses race elapsed time, not render-frame counts. The ghost should never influence authoritative race results.
 
 ### Walpurgis special races
-Start with authored, validated ghost trajectories chosen to match target difficulty. Apply a distinct Walpurgis visual and audio presentation. A separate encounter controller handles proximity warnings, scripted events and fail conditions. Do not directly treat a ghost as an AI with dynamic collision responses.
+Start with authored, validated ghost trajectories chosen to match target difficulty. Walpurgis starts behind the racers and follows the course; the encounter controller detects when she closes the gap enough to catch a racer. Design clear audiovisual distance warnings and a fair, telegraphed catch threshold. Apply a distinct Walpurgis visual and audio presentation. A separate encounter controller handles proximity warnings, scripted events and fail conditions. Do not directly treat a ghost as an AI with dynamic collision responses.
 
 ### Difficulty and fairness
 Consider selecting among recorded clean runs by finish time and checkpoint splits; test that the player has a reasonable chance to win. If using the player's own personal best, avoid making victory mathematically impossible through an arbitrary head start or unfair speed multiplier. Provide accessible difficulty options.
@@ -35,5 +36,6 @@ Each local racer may record a separate run, keyed to a local profile. Ghost play
 
 ## Open questions
 - Should ghosts be personal-best only, last run, or selectable?
-- Does Walpurgis chase *behind* the player, race alongside them, or serve as a time limit?
+- What happens when Walpurgis catches a racer: immediate failure, a recoverable penalty, or a short escape opportunity?
+- How much head start should the player receive, and how should the gap adapt to difficulty?
 - Can players share ghost files manually before online multiplayer exists?
