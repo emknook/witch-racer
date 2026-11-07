@@ -10,9 +10,9 @@
 - Repository is documentation source of truth; use structured Markdown and readable, prose-like code.
 
 ## Proposed, not yet approved
-- Grand Broom Prix magical festival setting.
+- Recovered Walpurgisnacht escape-race lore is preferred over the generic Grand Broom Prix placeholder; specific canon and eight-character selection await owner review.
 - Eight working names and personal motivations in [characters](../game-design/characters.md).
 - Equal racer stats initially.
-- First vertical slice with one track and two-player split-screen.
+- First vertical slice begins with a single-player capsule handling sandbox; split-screen is a later milestone.
 
 Record significant future choices here with rationale and consequences, rather than silently changing established requirements.
