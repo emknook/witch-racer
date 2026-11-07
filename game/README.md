@@ -11,6 +11,8 @@ Target: **Godot 4.7.2 stable**, confirmed against https://godotengine.org/downlo
 ## Included
 Procedurally generated figure-eight track spanning approximately 220 by 144 metres, with a raised crossover, colored boundary markers, roadside rocks and distinct stone landmarks inside each loop. The broom follows the road elevation automatically. Includes a blue capsule/pill witch on a stick broom, acceleration, steering, braking, chase camera and speed indicator.
 
+Gameplay movement and track detection use a 60-tick integer simulation, separated from interpolated visuals. See the [determinism contract and replay tests](../docs/architecture/deterministic-simulation.md).
+
 ## Not yet included
 Collisions, track confinement, banking, laps, AI, split-screen, real models, networking.
 

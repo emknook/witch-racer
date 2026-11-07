@@ -7,7 +7,7 @@
 - **Input sources** (human local controller, AI, future network command stream) express racer intentions through a common interface.
 - **Presentation** (camera, split-screen viewports, UI, effects, audio) observes race state rather than owning game rules.
 - **Authority** is explicit: local play can run one authoritative simulation; future online play can use a host/server authority and replicated snapshots or commands.
-- Do not promise deterministic Godot physics or build a networking abstraction before requirements justify it.
+- Gameplay must be bit-identical for the same rules version, initial state and tick-indexed inputs. Built-in Godot physics is excluded from authoritative gameplay. See the [simulation contract](deterministic-simulation.md).
 - Keep racer cosmetic definitions data-driven and independent of controller assignment.
 
 ## Proposed vertical slice

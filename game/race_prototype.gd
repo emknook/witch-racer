@@ -1,32 +1,33 @@
 extends Node3D
-## Minimal track-based arcade handling sandbox; geometry is generated at runtime.
+## Input adapter and presentation. Authoritative state lives in RaceSimulation.
 
-const RADIUS_X := 110.0
-const RADIUS_Z := 72.0
-const TRACK_SEGMENTS := 320
-const HOVER_HEIGHT := 1.5
-const HALF_WIDTH := 7.0
-const MAX_SPEED := 38.0
-const ACCELERATION := 22.0
-const BRAKING := 32.0
-const FRICTION := 9.0
-const TURN_SPEED := 2.2
+const Simulation = preload("res://simulation/race_simulation.gd")
+const TRACK_SEGMENTS := Simulation.SEGMENTS
+const HALF_WIDTH := Simulation.HALF_WIDTH / 1000.0
 
-var speed := 0.0
-var heading := 0.0
+var simulation := Simulation.new()
 var racer: Node3D
 var camera: Camera3D
 var hud: Label
 var track_centers := PackedVector3Array()
+var _previous_position := Vector3.ZERO
+var _current_position := Vector3.ZERO
+var _previous_heading := 0.0
+var _current_heading := 0.0
+var _visual_steering := 0.0
 
 func _ready() -> void:
+    if Engine.physics_ticks_per_second != Simulation.TICKS_PER_SECOND:
+        push_error("Race simulation requires 60 physics ticks per second.")
+        get_tree().quit(1)
+        return
     _create_environment()
     _create_track()
     _create_scenery()
     _create_racer()
     _create_camera_and_hud()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
     var accelerate := Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)
     var brake := Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN)
     var steer := float(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)) - int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)))
@@ -37,26 +38,27 @@ func _physics_process(delta: float) -> void:
             steer = axis
         accelerate = accelerate or Input.is_joy_button_pressed(pad, JOY_BUTTON_A)
         brake = brake or Input.is_joy_button_pressed(pad, JOY_BUTTON_B)
-    if brake:
-        speed = move_toward(speed, 0.0, BRAKING * delta)
-    elif accelerate:
-        speed = move_toward(speed, MAX_SPEED, ACCELERATION * delta)
-    else:
-        speed = move_toward(speed, 0.0, FRICTION * delta)
-    # Travel is along local +Z, so a right turn decreases Godot's Y rotation.
-    heading -= steer * TURN_SPEED * delta * clampf(speed / 15.0, 0.0, 1.0)
-    var forward := Vector3(sin(heading), 0.0, cos(heading))
-    racer.position += forward * speed * delta
-    var nearest := _nearest_track_position(racer.position - Vector3.UP * HOVER_HEIGHT)
-    var on_track := Vector2(racer.position.x - nearest.x, racer.position.z - nearest.z).length() <= HALF_WIDTH
-    var surface_height := nearest.y if on_track else 0.0
-    racer.position.y = lerpf(racer.position.y, surface_height + HOVER_HEIGHT, 1.0 - exp(-8.0 * delta))
-    racer.rotation.y = heading
+    # Quantize once at the input boundary. Replays/networking store these integers.
+    var steering := clampi(roundi(steer * 127.0), -127, 127)
+    _previous_position = _current_position
+    _previous_heading = _current_heading
+    simulation.step(accelerate, brake, steering)
+    _current_position = Vector3(simulation.x, simulation.y, simulation.z) / 1000.0
+    _current_heading = float(simulation.heading) * TAU / Simulation.TURN
+    _visual_steering = float(steering) / 127.0
+
+func _process(delta: float) -> void:
+    # Rendering may vary across machines. Nothing below feeds back into simulation.
+    var fraction := Engine.get_physics_interpolation_fraction()
+    racer.position = _previous_position.lerp(_current_position, fraction)
+    racer.rotation.y = lerp_angle(_previous_heading, _current_heading, fraction)
+    var forward := Vector3(sin(racer.rotation.y), 0.0, cos(racer.rotation.y))
     var body := racer.get_node("Body") as Node3D
-    body.rotation.z = lerpf(body.rotation.z, steer * 0.25, minf(1.0, 7.0 * delta))
+    body.rotation.z = lerpf(body.rotation.z, _visual_steering * 0.25, 1.0 - exp(-7.0 * delta))
     camera.global_position = camera.global_position.lerp(racer.position - forward * 10.0 + Vector3.UP * 5.5, minf(1.0, 5.0 * delta))
     camera.look_at(racer.position + forward * 5.0 + Vector3.UP * 1.1)
-    hud.text = "WITCH RACER | %d km/h | %s\nW/Up accelerate | S/Down brake | A,D/Arrows steer\nGamepad: left stick + A/B\nFigure eight: follow the raised crossover | No collision or laps yet" % [roundi(speed * 3.6), "ON TRACK" if on_track else "OFF TRACK"]
+    var speed_kmh := float(simulation.speed) * 3.6 / (Simulation.TICKS_PER_SECOND * 1000)
+    hud.text = "WITCH RACER | %d km/h | %s\nW/Up accelerate | S/Down brake | A,D/Arrows steer\nGamepad: left stick + A/B\nFigure eight: follow the raised crossover | No collision or laps yet" % [roundi(speed_kmh), "ON TRACK" if simulation.on_track else "OFF TRACK"]
 
 func _create_environment() -> void:
     var world := WorldEnvironment.new()
@@ -80,24 +82,11 @@ func _create_environment() -> void:
     add_child(ground)
 
 func _track_point(angle: float, offset: float) -> Vector3:
-    var center := Vector3(RADIUS_X * sin(angle), 3.0 * pow(1.0 + cos(angle), 2.0), RADIUS_Z * sin(2.0 * angle))
-    var tangent := Vector3(RADIUS_X * cos(angle), 0.0, 2.0 * RADIUS_Z * cos(2.0 * angle)).normalized()
-    var normal := Vector3(tangent.z, 0.0, -tangent.x)
-    return center + normal * offset
-
-func _nearest_track_position(point: Vector3) -> Vector3:
-    var nearest := track_centers[0]
-    var best_distance := INF
-    for i in range(TRACK_SEGMENTS):
-        var start := track_centers[i]
-        var segment := track_centers[i + 1] - start
-        var weight := clampf((point - start).dot(segment) / segment.length_squared(), 0.0, 1.0)
-        var candidate := start + segment * weight
-        var distance := point.distance_squared_to(candidate)
-        if distance < best_distance:
-            best_distance = distance
-            nearest = candidate
-    return nearest
+    var sample := fposmod(angle / TAU * TRACK_SEGMENTS, float(TRACK_SEGMENTS))
+    var index := floori(sample)
+    var start := simulation.track_point(index, roundi(offset * 1000.0))
+    var finish := simulation.track_point(index + 1, roundi(offset * 1000.0))
+    return Vector3(start[0], start[1], start[2]).lerp(Vector3(finish[0], finish[1], finish[2]), sample - index) / 1000.0
 
 func _create_track() -> void:
     for i in range(TRACK_SEGMENTS + 1):
@@ -144,11 +133,12 @@ func _create_rail(start: Vector3, finish: Vector3, color: Color) -> void:
 
 func _create_racer() -> void:
     racer = Node3D.new()
-    var start_angle := PI * 0.25
-    racer.position = _track_point(start_angle, 0.0) + Vector3.UP * HOVER_HEIGHT
-    var tangent := (_track_point(start_angle + 0.001, 0.0) - _track_point(start_angle, 0.0)).normalized()
-    heading = atan2(tangent.x, tangent.z)
-    racer.rotation.y = heading
+    _current_position = Vector3(simulation.x, simulation.y, simulation.z) / 1000.0
+    _previous_position = _current_position
+    _current_heading = float(simulation.heading) * TAU / Simulation.TURN
+    _previous_heading = _current_heading
+    racer.position = _current_position
+    racer.rotation.y = _current_heading
     add_child(racer)
     var body := Node3D.new()
     body.name = "Body"
@@ -173,7 +163,7 @@ func _create_camera_and_hud() -> void:
     camera = Camera3D.new()
     camera.current = true
     camera.fov = 80.0
-    var forward := Vector3(sin(heading), 0.0, cos(heading))
+    var forward := Vector3(sin(_current_heading), 0.0, cos(_current_heading))
     camera.position = racer.position - forward * 10.0 + Vector3.UP * 5.5
     add_child(camera)
     var canvas := CanvasLayer.new()
