@@ -6,7 +6,7 @@ $version = (Get-Content (Join-Path $repositoryRoot ".godot-version") -Raw).Trim(
 $installDirectory = Join-Path $repositoryRoot ".tools/godot/$version"
 $executable = Join-Path $installDirectory "godot.exe"
 
-if (-not $IsWindows -and $PSVersionTable.PSEdition -eq "Core") {
+if ($env:OS -ne "Windows_NT") {
     throw "This script supports Windows. On Linux, use setup-godot.sh."
 }
 
