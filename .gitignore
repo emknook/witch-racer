@@ -1,0 +1,9 @@
+# Downloaded local Godot executables
+.tools/
+
+# Godot-generated import and editor state
+**/.godot/
+
+# Build artifacts
+build/
+dist/
