@@ -207,25 +207,39 @@ func _create_rail(start: Vector3, finish: Vector3, color: Color) -> void:
     add_child(rail)
 
 func _create_racer() -> void:
-    racer = Node3D.new()
-    _current_position = Vector3(simulation.x, simulation.y, simulation.z) / 1000.0
+    _initialize_racer_transform()
+    _create_racer_body()
+
+func _initialize_racer_transform() -> void:
+    _read_current_state()
     _previous_position = _current_position
-    _current_heading = float(simulation.heading) * TAU / Simulation.TURN
     _previous_heading = _current_heading
+    racer = Node3D.new()
     racer.position = _current_position
     racer.rotation.y = _current_heading
     add_child(racer)
+
+func _create_racer_body() -> void:
     var body := Node3D.new()
     body.name = "Body"
     racer.add_child(body)
+    _add_racer_pill(body)
+    _add_racer_broom(body)
+
+func _add_racer_pill(body: Node3D) -> void:
     var pill := MeshInstance3D.new()
-    var capsule := CapsuleMesh.new()
-    capsule.radius = 0.65
-    capsule.height = 2.4
-    pill.mesh = capsule
+    pill.mesh = _pill_mesh()
     pill.position.y = 0.5
     pill.material_override = _material(Color("65b9ff"))
     body.add_child(pill)
+
+func _pill_mesh() -> CapsuleMesh:
+    var capsule := CapsuleMesh.new()
+    capsule.radius = 0.65
+    capsule.height = 2.4
+    return capsule
+
+func _add_racer_broom(body: Node3D) -> void:
     var broom := MeshInstance3D.new()
     var stick := BoxMesh.new()
     stick.size = Vector3(0.22, 0.22, 3.5)
@@ -235,12 +249,18 @@ func _create_racer() -> void:
     body.add_child(broom)
 
 func _create_camera_and_hud() -> void:
+    _create_chase_camera()
+    _create_hud()
+
+func _create_chase_camera() -> void:
     camera = Camera3D.new()
     camera.current = true
     camera.fov = 80.0
     var forward := Vector3(sin(_current_heading), 0.0, cos(_current_heading))
     camera.position = racer.position - forward * 10.0 + Vector3.UP * 5.5
     add_child(camera)
+
+func _create_hud() -> void:
     var canvas := CanvasLayer.new()
     add_child(canvas)
     hud = Label.new()
