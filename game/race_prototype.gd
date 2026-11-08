@@ -47,7 +47,7 @@ func _accelerating() -> bool:
 func _braking() -> bool:
     return Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN) or _gamepad_button(JOY_BUTTON_B)
 
-func _gamepad_button(button: JoyButton) -> bool:
+func _gamepad_button(button: int) -> bool:
     return _has_gamepad() and Input.is_joy_button_pressed(Input.get_connected_joypads()[0], button)
 
 func _has_gamepad() -> bool:
