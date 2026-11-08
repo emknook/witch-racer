@@ -19,13 +19,27 @@ if [[ -x "$executable" ]]; then
   exit 0
 fi
 
-archive_url="https://github.com/godotengine/godot/releases/download/${version}-stable/Godot_v${version}-stable_linux.x86_64.zip"
+archive_name="Godot_v${version}-stable_linux.x86_64.zip"
+primary_url="https://github.com/godotengine/godot/releases/download/${version}-stable/$archive_name"
+mirror_url="https://downloads.sourceforge.net/project/godot-engine.mirror/${version}-stable/$archive_name"
 mkdir -p "$install_directory"
 temporary_archive="$(mktemp)"
 trap 'rm -f "$temporary_archive"' EXIT
 
-echo "Downloading Godot $version for Linux x86_64..."
-curl --fail --location --retry 3 --silent --show-error "$archive_url" --output "$temporary_archive"
+download_archive() {
+  local url="$1"
+  echo "Downloading Godot $version from $url..."
+  curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+    --connect-timeout 20 --max-time 240 --silent --show-error \
+    "$url" --output "$temporary_archive"
+}
+
+if ! download_archive "$primary_url"; then
+  echo "Primary download failed; trying SourceForge's Godot mirror." >&2
+  rm -f "$temporary_archive"
+  download_archive "$mirror_url"
+fi
+unzip -tq "$temporary_archive" > /dev/null
 unzip -j -q "$temporary_archive" -d "$install_directory"
 downloaded_binary="$install_directory/Godot_v${version}-stable_linux.x86_64"
 mv "$downloaded_binary" "$executable"

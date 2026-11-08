@@ -27,9 +27,23 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y unzip
 
+      - name: Restore pinned Godot from cache
+        if: runner.os == 'Linux'
+        uses: actions/cache@v4
+        with:
+          path: .tools/godot
+          key: godot-linux-x86_64-${{ hashFiles('.godot-version') }}
+
       - name: Install pinned Godot
         if: runner.os == 'Linux'
         run: bash scripts/setup-godot.sh
+
+      - name: Restore pinned Godot from cache (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: .tools/godot
+          key: godot-windows-x86_64-${{ hashFiles('.godot-version', 'scripts/setup-godot.ps1') }}
 
       - name: Install pinned Godot (Windows)
         if: runner.os == 'Windows'
