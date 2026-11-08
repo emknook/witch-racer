@@ -54,11 +54,16 @@ func _has_gamepad() -> bool:
     return not Input.get_connected_joypads().is_empty()
 
 func _steering_input() -> float:
-    var keyboard := float(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)) - int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)))
+    var keyboard := _keyboard_steering()
     if not _has_gamepad():
         return keyboard
     var stick := Input.get_joy_axis(Input.get_connected_joypads()[0], JOY_AXIS_LEFT_X)
     return stick if absf(stick) > 0.15 else keyboard
+
+func _keyboard_steering() -> float:
+    var right := Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)
+    var left := Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)
+    return float(int(right) - int(left))
 
 func _read_current_state() -> void:
     _current_position = Vector3(simulation.x, simulation.y, simulation.z) / 1000.0
