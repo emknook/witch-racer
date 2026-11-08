@@ -28,37 +28,73 @@ func _ready() -> void:
     _create_camera_and_hud()
 
 func _physics_process(_delta: float) -> void:
-    var accelerate := Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)
-    var brake := Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN)
-    var steer := float(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)) - int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)))
-    if not Input.get_connected_joypads().is_empty():
-        var pad := Input.get_connected_joypads()[0]
-        var axis := Input.get_joy_axis(pad, JOY_AXIS_LEFT_X)
-        if absf(axis) > 0.15:
-            steer = axis
-        accelerate = accelerate or Input.is_joy_button_pressed(pad, JOY_BUTTON_A)
-        brake = brake or Input.is_joy_button_pressed(pad, JOY_BUTTON_B)
-    # Quantize once at the input boundary. Replays/networking store these integers.
-    var steering := clampi(roundi(steer * 127.0), -127, 127)
+    _remember_previous_state()
+    _advance_simulation()
+    _read_current_state()
+
+func _remember_previous_state() -> void:
     _previous_position = _current_position
     _previous_heading = _current_heading
-    simulation.step(accelerate, brake, steering)
-    _current_position = Vector3(simulation.x, simulation.y, simulation.z) / 1000.0
-    _current_heading = float(simulation.heading) * TAU / Simulation.TURN
+
+func _advance_simulation() -> void:
+    var steering := clampi(roundi(_steering_input() * 127.0), -127, 127)
+    simulation.step(_accelerating(), _braking(), steering)
     _visual_steering = float(steering) / 127.0
 
+func _accelerating() -> bool:
+    return Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP) or _gamepad_button(JOY_BUTTON_A)
+
+func _braking() -> bool:
+    return Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN) or _gamepad_button(JOY_BUTTON_B)
+
+func _gamepad_button(button: int) -> bool:
+    return _has_gamepad() and Input.is_joy_button_pressed(Input.get_connected_joypads()[0], button)
+
+func _has_gamepad() -> bool:
+    return not Input.get_connected_joypads().is_empty()
+
+func _steering_input() -> float:
+    var keyboard := _keyboard_steering()
+    if not _has_gamepad():
+        return keyboard
+    var stick := Input.get_joy_axis(Input.get_connected_joypads()[0], JOY_AXIS_LEFT_X)
+    return stick if absf(stick) > 0.15 else keyboard
+
+func _keyboard_steering() -> float:
+    var right := Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)
+    var left := Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)
+    return float(int(right) - int(left))
+
+func _read_current_state() -> void:
+    _current_position = Vector3(simulation.x, simulation.y, simulation.z) / 1000.0
+    _current_heading = float(simulation.heading) * TAU / Simulation.TURN
+
 func _process(delta: float) -> void:
-    # Rendering may vary across machines. Nothing below feeds back into simulation.
+    _interpolate_racer()
+    _animate_lean(delta)
+    _follow_racer(delta)
+    _update_hud()
+
+func _interpolate_racer() -> void:
     var fraction := Engine.get_physics_interpolation_fraction()
     racer.position = _previous_position.lerp(_current_position, fraction)
     racer.rotation.y = lerp_angle(_previous_heading, _current_heading, fraction)
-    var forward := Vector3(sin(racer.rotation.y), 0.0, cos(racer.rotation.y))
+
+func _animate_lean(delta: float) -> void:
     var body := racer.get_node("Body") as Node3D
-    body.rotation.z = lerpf(body.rotation.z, _visual_steering * 0.25, 1.0 - exp(-7.0 * delta))
-    camera.global_position = camera.global_position.lerp(racer.position - forward * 10.0 + Vector3.UP * 5.5, minf(1.0, 5.0 * delta))
+    var smoothing := 1.0 - exp(-7.0 * delta)
+    body.rotation.z = lerpf(body.rotation.z, _visual_steering * 0.25, smoothing)
+
+func _follow_racer(delta: float) -> void:
+    var forward := Vector3(sin(racer.rotation.y), 0.0, cos(racer.rotation.y))
+    var target := racer.position - forward * 10.0 + Vector3.UP * 5.5
+    camera.global_position = camera.global_position.lerp(target, minf(1.0, 5.0 * delta))
     camera.look_at(racer.position + forward * 5.0 + Vector3.UP * 1.1)
+
+func _update_hud() -> void:
     var speed_kmh := float(simulation.speed) * 3.6 / (Simulation.TICKS_PER_SECOND * 1000)
-    hud.text = "WITCH RACER | %d km/h | %s\nW/Up accelerate | S/Down brake | A,D/Arrows steer\nGamepad: left stick + A/B\nFigure eight: follow the raised crossover | No collision or laps yet" % [roundi(speed_kmh), "ON TRACK" if simulation.on_track else "OFF TRACK"]
+    var status := "ON TRACK" if simulation.on_track else "OFF TRACK"
+    hud.text = "WITCH RACER | %d km/h | %s\\nW/Up accelerate | S/Down brake | A,D/Arrows steer\\nGamepad: left stick + A/B\\nFigure eight: follow the raised crossover | No collision or laps yet" % [roundi(speed_kmh), status]
 
 func _create_environment() -> void:
     var world := WorldEnvironment.new()
