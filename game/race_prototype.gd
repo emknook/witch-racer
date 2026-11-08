@@ -97,18 +97,27 @@ func _update_hud() -> void:
     hud.text = "WITCH RACER | %d km/h | %s\\nW/Up accelerate | S/Down brake | A,D/Arrows steer\\nGamepad: left stick + A/B\\nFigure eight: follow the raised crossover | No collision or laps yet" % [roundi(speed_kmh), status]
 
 func _create_environment() -> void:
+    _create_sky()
+    _create_sun()
+    _create_ground()
+
+func _create_sky() -> void:
+    var environment := Environment.new()
+    environment.background_mode = Environment.BG_COLOR
+    environment.background_color = Color("79758d")
+    environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+    environment.ambient_light_color = Color("b5a6d0")
+    environment.ambient_light_energy = 0.65
     var world := WorldEnvironment.new()
-    var env := Environment.new()
-    env.background_mode = Environment.BG_COLOR
-    env.background_color = Color("79758d")
-    env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-    env.ambient_light_color = Color("b5a6d0")
-    env.ambient_light_energy = 0.65
-    world.environment = env
+    world.environment = environment
     add_child(world)
-    var light := DirectionalLight3D.new()
-    light.rotation_degrees = Vector3(-55.0, 25.0, 0.0)
-    add_child(light)
+
+func _create_sun() -> void:
+    var sun := DirectionalLight3D.new()
+    sun.rotation_degrees = Vector3(-55.0, 25.0, 0.0)
+    add_child(sun)
+
+func _create_ground() -> void:
     var ground := MeshInstance3D.new()
     var plane := PlaneMesh.new()
     plane.size = Vector2(800.0, 800.0)
@@ -125,33 +134,63 @@ func _track_point(angle: float, offset: float) -> Vector3:
     return Vector3(start[0], start[1], start[2]).lerp(Vector3(finish[0], finish[1], finish[2]), sample - index) / 1000.0
 
 func _create_track() -> void:
-    for i in range(TRACK_SEGMENTS + 1):
-        track_centers.append(_track_point(TAU * float(i) / TRACK_SEGMENTS, 0.0))
+    _remember_track_centers()
+    _create_road()
+    _create_boundary_rails()
+
+func _remember_track_centers() -> void:
+    for index in range(TRACK_SEGMENTS + 1):
+        track_centers.append(_track_point(_segment_angle(index), 0.0))
+
+func _segment_angle(index: int) -> float:
+    return TAU * float(index) / TRACK_SEGMENTS
+
+func _create_road() -> void:
     var surface := SurfaceTool.new()
     surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-    for i in range(TRACK_SEGMENTS):
-        var a := TAU * float(i) / TRACK_SEGMENTS
-        var b := TAU * float(i + 1) / TRACK_SEGMENTS
-        var inside_a := _track_point(a, -HALF_WIDTH)
-        var outside_a := _track_point(a, HALF_WIDTH)
-        var inside_b := _track_point(b, -HALF_WIDTH)
-        var outside_b := _track_point(b, HALF_WIDTH)
-        for point in [inside_a, outside_a, inside_b, outside_a, outside_b, inside_b]:
-            surface.set_color(Color("625978") if i % 2 == 0 else Color("756a8d"))
-            surface.add_vertex(point)
-    var track := MeshInstance3D.new()
+    for index in range(TRACK_SEGMENTS):
+        _append_road_segment(surface, index)
+    _add_road_mesh(surface)
+
+func _append_road_segment(surface: SurfaceTool, index: int) -> void:
+    var start := _segment_angle(index)
+    var finish := _segment_angle(index + 1)
+    var left_start := _track_point(start, -HALF_WIDTH)
+    var right_start := _track_point(start, HALF_WIDTH)
+    var left_finish := _track_point(finish, -HALF_WIDTH)
+    var right_finish := _track_point(finish, HALF_WIDTH)
+    var vertices := [left_start, right_start, left_finish, right_start, right_finish, left_finish]
+    for vertex in vertices:
+        surface.set_color(_road_color(index))
+        surface.add_vertex(vertex)
+
+func _road_color(index: int) -> Color:
+    return Color("625978") if index % 2 == 0 else Color("756a8d")
+
+func _add_road_mesh(surface: SurfaceTool) -> void:
     surface.generate_normals()
-    track.mesh = surface.commit()
+    var road := MeshInstance3D.new()
+    road.mesh = surface.commit()
+    road.material_override = _road_material()
+    add_child(road)
+
+func _road_material() -> StandardMaterial3D:
     var material := StandardMaterial3D.new()
     material.vertex_color_use_as_albedo = true
     material.cull_mode = BaseMaterial3D.CULL_DISABLED
-    track.material_override = material
-    add_child(track)
+    return material
+
+func _create_boundary_rails() -> void:
     for side in [-1.0, 1.0]:
-        for i in range(TRACK_SEGMENTS):
-            var a := TAU * float(i) / TRACK_SEGMENTS
-            var b := TAU * float(i + 1) / TRACK_SEGMENTS
-            _create_rail(_track_point(a, side * (HALF_WIDTH + 0.3)), _track_point(b, side * (HALF_WIDTH + 0.3)), Color("ffca76") if i % 8 < 4 else Color("8bdbdb"))
+        for index in range(TRACK_SEGMENTS):
+            _create_boundary_segment(index, side)
+
+func _create_boundary_segment(index: int, side: float) -> void:
+    var offset := side * (HALF_WIDTH + 0.3)
+    var start := _track_point(_segment_angle(index), offset)
+    var finish := _track_point(_segment_angle(index + 1), offset)
+    var color := Color("ffca76") if index % 8 < 4 else Color("8bdbdb")
+    _create_rail(start, finish, color)
 
 func _create_rail(start: Vector3, finish: Vector3, color: Color) -> void:
     start.y += 0.5
@@ -212,43 +251,61 @@ func _create_camera_and_hud() -> void:
 func _create_scenery() -> void:
     var random := RandomNumberGenerator.new()
     random.seed = 84321
-    var stone_material := _material(Color("79868a"))
-    var warm_stone_material := _material(Color("ac8064"))
-    for i in range(96):
-        var angle := TAU * float(i) / 96.0
-        var side := -1.0 if i % 2 == 0 else 1.0
-        var location := _track_point(angle, side * random.randf_range(12.0, 27.0))
-        # Keep scenery out of both branches at the crossover.
-        var clear_of_road := true
-        for center in track_centers:
-            if Vector2(location.x - center.x, location.z - center.z).length() < HALF_WIDTH + 3.0:
-                clear_of_road = false
-                break
-        if not clear_of_road:
-            continue
-        var rock := MeshInstance3D.new()
-        var mesh := SphereMesh.new()
-        mesh.radial_segments = 5
-        mesh.rings = 2
-        rock.mesh = mesh
-        var height := random.randf_range(1.0, 4.5)
-        rock.scale = Vector3(random.randf_range(2.0, 5.0), height, random.randf_range(2.0, 4.0))
-        rock.position = Vector3(location.x, height * 0.35, location.z)
-        rock.rotation = Vector3(0.15, random.randf_range(0.0, TAU), 0.2)
-        rock.material_override = warm_stone_material if sin(angle) > 0.0 else stone_material
-        add_child(rock)
-    # Tall, distinct landmarks make each lobe recognizable from a distance.
-    for side in [-1.0, 1.0]:
-        var landmark := MeshInstance3D.new()
-        var spire := CylinderMesh.new()
-        spire.top_radius = 1.0
-        spire.bottom_radius = 7.0
-        spire.height = 24.0 if side < 0.0 else 16.0
-        spire.radial_segments = 5
-        landmark.mesh = spire
-        landmark.position = Vector3(side * 74.0, spire.height * 0.5, 0.0)
-        landmark.material_override = stone_material if side < 0.0 else warm_stone_material
-        add_child(landmark)
+    for index in range(96):
+        _place_roadside_rock(random, index)
+    _create_landmarks()
+
+func _place_roadside_rock(random: RandomNumberGenerator, index: int) -> void:
+    var angle := TAU * float(index) / 96.0
+    var side := -1.0 if index % 2 == 0 else 1.0
+    var position := _track_point(angle, side * random.randf_range(12.0, 27.0))
+    if _overlaps_road(position):
+        return
+    _create_rock(random, position, angle)
+
+func _overlaps_road(position: Vector3) -> bool:
+    for center in track_centers:
+        if Vector2(position.x - center.x, position.z - center.z).length() < HALF_WIDTH + 3.0:
+            return true
+    return false
+
+func _create_rock(random: RandomNumberGenerator, position: Vector3, angle: float) -> void:
+    var rock := MeshInstance3D.new()
+    rock.mesh = _rock_mesh()
+    _shape_rock(rock, random, position)
+    rock.material_override = _material(Color("ac8064") if sin(angle) > 0.0 else Color("79868a"))
+    add_child(rock)
+
+func _rock_mesh() -> SphereMesh:
+    var mesh := SphereMesh.new()
+    mesh.radial_segments = 5
+    mesh.rings = 2
+    return mesh
+
+func _shape_rock(rock: MeshInstance3D, random: RandomNumberGenerator, position: Vector3) -> void:
+    var height := random.randf_range(1.0, 4.5)
+    rock.scale = Vector3(random.randf_range(2.0, 5.0), height, random.randf_range(2.0, 4.0))
+    rock.position = Vector3(position.x, height * 0.35, position.z)
+    rock.rotation = Vector3(0.15, random.randf_range(0.0, TAU), 0.2)
+
+func _create_landmarks() -> void:
+    _create_landmark(-1.0, 24.0, Color("79868a"))
+    _create_landmark(1.0, 16.0, Color("ac8064"))
+
+func _create_landmark(side: float, height: float, color: Color) -> void:
+    var landmark := MeshInstance3D.new()
+    landmark.mesh = _spire_mesh(height)
+    landmark.position = Vector3(side * 74.0, height * 0.5, 0.0)
+    landmark.material_override = _material(color)
+    add_child(landmark)
+
+func _spire_mesh(height: float) -> CylinderMesh:
+    var mesh := CylinderMesh.new()
+    mesh.top_radius = 1.0
+    mesh.bottom_radius = 7.0
+    mesh.height = height
+    mesh.radial_segments = 5
+    return mesh
 
 func _material(color: Color) -> StandardMaterial3D:
     var material := StandardMaterial3D.new()
