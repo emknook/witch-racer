@@ -11,3 +11,6 @@
 
 ## Open
 Choose target resolution, texture filtering, vertex wobble (if any), fog, palette, lighting and exact asset budgets after prototype comparisons.
+
+## Reference boards
+- [First licensed reference board](reference-board-01.md) — early visual references for low-poly environments, track readability, night lighting and broom-flight symbolism. Images remain embedded from their source pages and are individually attributed.
