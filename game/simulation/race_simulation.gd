@@ -112,33 +112,50 @@ func nearest_track_point(px: int, py: int, pz: int) -> PackedInt64Array:
     return nearest
 
 func step(accelerate: bool, brake: bool, steering: int) -> void:
-    steering = clampi(steering, -127, 127)
+    _update_speed(accelerate, brake)
+    _update_heading(clampi(steering, -127, 127))
+    _move_forward()
+    _follow_track_elevation()
+    tick += 1
+
+func _update_speed(accelerate: bool, brake: bool) -> void:
     if brake:
         speed = maxi(0, speed - BRAKING)
     elif accelerate:
         speed = mini(MAX_SPEED, speed + ACCELERATION)
     else:
         speed = maxi(0, speed - FRICTION)
-    var turn_numerator := -steering * TURN_RATE * mini(speed, 15000 * TICKS_PER_SECOND) + _turn_remainder
-    heading = posmod(heading + turn_numerator / STEER_DENOMINATOR, TURN)
-    _turn_remainder = turn_numerator % STEER_DENOMINATOR
+
+func _update_heading(steering: int) -> void:
+    var numerator := -steering * TURN_RATE * mini(speed, 15000 * TICKS_PER_SECOND) + _turn_remainder
+    heading = posmod(heading + numerator / STEER_DENOMINATOR, TURN)
+    _turn_remainder = numerator % STEER_DENOMINATOR
+
+func _move_forward() -> void:
     var move_x := sine(heading) * speed + _x_remainder
     var move_z := sine(heading + TURN / 4) * speed + _z_remainder
     x = clampi(x + move_x / MOVE_DENOMINATOR, -WORLD_LIMIT, WORLD_LIMIT)
     z = clampi(z + move_z / MOVE_DENOMINATOR, -WORLD_LIMIT, WORLD_LIMIT)
     _x_remainder = move_x % MOVE_DENOMINATOR
     _z_remainder = move_z % MOVE_DENOMINATOR
+
+func _follow_track_elevation() -> void:
     var nearest := nearest_track_point(x, y - HOVER_HEIGHT, z)
+    on_track = _within_track_width(nearest)
+    var target_y := (nearest[1] if on_track else 0) + HOVER_HEIGHT
+    _approach_elevation(target_y)
+
+func _within_track_width(nearest: PackedInt64Array) -> bool:
     var dx := x - nearest[0]
     var dz := z - nearest[2]
-    on_track = dx * dx + dz * dz <= HALF_WIDTH * HALF_WIDTH
-    var target_y := (nearest[1] if on_track else 0) + HOVER_HEIGHT
+    return dx * dx + dz * dz <= HALF_WIDTH * HALF_WIDTH
+
+func _approach_elevation(target_y: int) -> void:
     var difference := target_y - y
     var rise := difference / 8
     if rise == 0 and difference != 0:
         rise = 1 if difference > 0 else -1
     y += rise
-    tick += 1
 
 func next_random() -> int:
     # Gameplay RNG, separate from cosmetic Godot RNG. State is saved for rollback.
