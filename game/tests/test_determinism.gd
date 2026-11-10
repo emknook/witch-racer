@@ -11,15 +11,23 @@ func _initialize() -> void:
     _test_handling()
     _test_track()
     _test_snapshots()
+    _verify_replay()
+    _report_results()
+
+func _verify_replay() -> void:
     var first := _replay_digest()
-    var second := _replay_digest()
-    _check(first == second, "Independent replay runs must match at every tick")
-    if FileAccess.file_exists(GOLDEN_PATH):
-        var expected := FileAccess.get_file_as_string(GOLDEN_PATH).strip_edges()
-        _check(first == expected, "Replay differs from the cross-platform golden: " + first)
-    else:
-        _check(false, "Missing golden replay fixture. Observed digest: " + first)
+    _check(first == _replay_digest(), "Independent replay runs must match at every tick")
+    _verify_golden_replay(first)
     print("Replay SHA-256: ", first)
+
+func _verify_golden_replay(actual: String) -> void:
+    if not FileAccess.file_exists(GOLDEN_PATH):
+        _check(false, "Missing golden replay fixture. Observed digest: " + actual)
+        return
+    var expected := FileAccess.get_file_as_string(GOLDEN_PATH).strip_edges()
+    _check(actual == expected, "Replay differs from the cross-platform golden: " + actual)
+
+func _report_results() -> void:
     print("Deterministic simulation checks: ", "PASS" if failures == 0 else "FAIL (%d)" % failures)
     quit(0 if failures == 0 else 1)
 
@@ -29,13 +37,22 @@ func _check(condition: bool, message: String) -> void:
         push_error(message)
 
 func _test_math() -> void:
+    _test_sine_landmarks()
+    _test_sine_symmetry()
+    _test_integer_square_roots()
+
+func _test_sine_landmarks() -> void:
     _check(Simulation.sine(0) == 0, "sin(0)")
     _check(Simulation.sine(16384) == 1000000, "sin(quarter turn)")
     _check(Simulation.sine(32768) == 0, "sin(half turn)")
     _check(Simulation.sine(49152) == -1000000, "sin(three-quarter turn)")
+
+func _test_sine_symmetry() -> void:
     for angle in range(0, 65536, 193):
         _check(Simulation.sine(angle) == -Simulation.sine(-angle), "Sine odd symmetry")
         _check(Simulation.sine(angle) == Simulation.sine(angle + 65536), "Sine period")
+
+func _test_integer_square_roots() -> void:
     for value in [0, 1, 2, 3, 4, 49, 50, 1000000000000]:
         var root := Simulation.integer_sqrt(value)
         _check(root * root <= value and (root + 1) * (root + 1) > value, "Integer square root floor")
@@ -80,10 +97,17 @@ func _test_handling() -> void:
 func _test_track() -> void:
     var race := Simulation.new()
     _check(race.track_point(0) == race.track_point(Simulation.SEGMENTS), "Closed track")
+    _test_crossover_projection(race)
+    _test_crossover_elevation(race)
+    _test_off_track_classification(race)
+
+func _test_crossover_projection(race: RefCounted) -> void:
     var upper: PackedInt64Array = race.nearest_track_point(0, 12000, 0)
     var lower: PackedInt64Array = race.nearest_track_point(0, 0, 0)
     _check(upper == PackedInt64Array([0, 12000, 0]), "Upper crossover branch")
     _check(lower == PackedInt64Array([0, 0, 0]), "Lower crossover branch")
+
+func _test_crossover_elevation(race: RefCounted) -> void:
     var state: PackedInt64Array = race.snapshot()
     state[2] = 0
     state[3] = 13500
@@ -95,6 +119,9 @@ func _test_track() -> void:
     _check(race.restore(state), "Restore lower crossing")
     race.step(false, false, 0)
     _check(race.on_track and race.y == 1500, "Lower crossing stays under bridge")
+
+func _test_off_track_classification(race: RefCounted) -> void:
+    var state: PackedInt64Array = race.snapshot()
     state[2] = 500000
     state[4] = 500000
     _check(race.restore(state), "Restore off track")
@@ -128,6 +155,29 @@ func _advance(race: RefCounted, index: int) -> void:
     race.step(index % 420 < 330, index % 420 >= 360, steering)
     if index % 97 == 0:
         race.next_random()
+
+func _replay_digest() -> String:
+    var race := Simulation.new()
+    var hash_context := HashingContext.new()
+    hash_context.start(HashingContext.HASH_SHA256)
+    _hash_track_vertices(race, hash_context)
+    _hash_replay_states(race, hash_context)
+    return hash_context.finish().hex_encode()
+
+func _hash_track_vertices(race: RefCounted, hash_context: HashingContext) -> void:
+    for index in range(Simulation.SEGMENTS):
+        for offset in [-Simulation.HALF_WIDTH, 0, Simulation.HALF_WIDTH]:
+            var point: PackedInt64Array = race.track_point(index, offset)
+            hash_context.update(("%d,%d,%d;" % [point[0], point[1], point[2]]).to_utf8_buffer())
+
+func _hash_replay_states(race: RefCounted, hash_context: HashingContext) -> void:
+    _hash_state(race, hash_context)
+    for index in range(REPLAY_TICKS):
+        _advance(race, index)
+        _hash_state(race, hash_context)
+
+func _hash_state(race: RefCounted, hash_context: HashingContext) -> void:
+    hash_context.update((race.canonical_state() + "\n").to_utf8_buffer())
 
 func _replay_digest() -> String:
     var race := Simulation.new()
