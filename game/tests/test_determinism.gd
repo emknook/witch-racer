@@ -178,18 +178,3 @@ func _hash_replay_states(race: RefCounted, hash_context: HashingContext) -> void
 
 func _hash_state(race: RefCounted, hash_context: HashingContext) -> void:
     hash_context.update((race.canonical_state() + "\n").to_utf8_buffer())
-
-func _replay_digest() -> String:
-    var race := Simulation.new()
-    var hash_context := HashingContext.new()
-    hash_context.start(HashingContext.HASH_SHA256)
-    # Include all road vertices, not just the final racer state.
-    for i in range(Simulation.SEGMENTS):
-        for offset in [-Simulation.HALF_WIDTH, 0, Simulation.HALF_WIDTH]:
-            var point: PackedInt64Array = race.track_point(i, offset)
-            hash_context.update(("%d,%d,%d;" % [point[0], point[1], point[2]]).to_utf8_buffer())
-    hash_context.update((race.canonical_state() + "\n").to_utf8_buffer())
-    for i in range(REPLAY_TICKS):
-        _advance(race, i)
-        hash_context.update((race.canonical_state() + "\n").to_utf8_buffer())
-    return hash_context.finish().hex_encode()
