@@ -2,6 +2,8 @@
 
 **Target:** Godot latest stable release, verified against official release notes before engine setup or upgrades. Do not assume a specific version without checking.
 
+See [module boundaries and TDD workflow](tdd-and-module-boundaries.md) for responsibilities, incremental migration, testing standards and definition of done.
+
 ## Principles
 - **Race simulation** owns racer movement, checkpoints, lap progression and standings.
 - **Input sources** (human local controller, AI, future network command stream) express racer intentions through a common interface.
