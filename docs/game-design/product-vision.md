@@ -32,6 +32,10 @@
 
 ## Story and tone
 
+**Confirmed campaign direction (2026-11-11):** The story begins by introducing witch racing and championships. Rumours of Walpurgis are sprinkled gradually throughout the competitive progression. Only after approximately **70–80% of story-track progression** does it become clear that the story has been building toward Walpurgisnacht. The late reveal should recontextualize the championship rather than replace racing as the game's identity. These percentages indicate narrative pacing, not a fixed track count.
+
+**Proposed pacing (subject to story design):** Early races establish the racing world and rivals; middle races introduce strange incidents and recurring clues; late championship races connect those clues; the final roughly 20–30% contains the Walpurgisnacht reveal, escalating story events and climactic pursuit. Avoid presenting Walpurgis as the primary antagonist in the opening tutorial.
+
 **Confirmed:** A simple, charming story; Walpurgis features in story sequences and special races. Her chase threatens racers from behind. Recorded runs may inform her route and speed. A precisely timed normal boost during her reaching-arm grab is a proposed escape mechanic requiring validation.
 
 **Working lore, not final canon:** The Walpurgisnacht gathering, magical track markings, captured ancient creature, Wardens and thirteen seals are recorded in [Walpurgisnacht lore](walpurgisnacht.md). Avoid silently replacing this with the superseded Grand Broom Prix draft. The exact relationship between regular competitions and the recurring pursuit is unresolved.
@@ -81,7 +85,7 @@ Eight distinct witches, broader tracks/events, lightweight story progression, po
 
 ## Decisions required from the owner (highest leverage first)
 
-1. **Primary fantasy:** Is the game chiefly a competitive witch racing championship with occasional horror events, or is the Walpurgis escape festival the main campaign structure?
+1. **Championship-to-Walpurgis transition:** How is the late reveal connected to the racing championships, and what does the player discover at the 70–80% turning point?
 2. **Winning and progression:** Are solo races time trials, AI grid races, cups, or a deliberate mix? What unlocks the next event?
 3. **Race mechanics:** Which of boost, drift, collision, items and shortcuts are essential versus explicitly out of scope?
 4. **Local multiplayer:** Is two-player split-screen sufficient for initial release, or is four-player a requirement?
