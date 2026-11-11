@@ -34,7 +34,9 @@
 
 **Confirmed campaign direction (2026-11-11):** The racing championships are secretly organized to prepare witches for Walpurgisnacht. The story begins by introducing witch racing and championships. Rumours of Walpurgis are sprinkled gradually throughout the competitive progression. Only after approximately **70–80% of story-track progression** does it become clear that the story has been building toward Walpurgisnacht. The late reveal should recontextualize the championship rather than replace racing as the game's identity. These percentages indicate narrative pacing, not a fixed track count.
 
-**Open narrative details:** Who organizes the championships, why the purpose is concealed, and how much the organizers know about Walpurgis remain undecided. Their intentions must not be assumed villainous.
+**Confirmed organizer rationale (2026-11-11):** The organizers conceal the gruesome necessity behind witch racing: speed and racing skill are needed to survive Walpurgis and capture the beast again. They benefit from the public embracing racing as an exciting sport. Competition continually raises the standard of racers, so each generation becomes better prepared than the last for the recurring capture. The championships are therefore both genuine sporting events and long-term preparation for Walpurgisnacht. The player learns their true purpose late in the campaign, around 70–80% of story-track progression.
+
+**Open narrative details:** The organizers' identity, exact methods of capture, what happens to unsuccessful racers, the historical origin of the secrecy, and whether hiding the danger was ethically justified remain undecided. Do not imply that racers are deliberately sacrificed without owner approval.
 
 **Proposed pacing (subject to story design):** Early races establish the racing world and rivals; middle races introduce strange incidents and recurring clues; late championship races connect those clues; the final roughly 20–30% contains the Walpurgisnacht reveal, escalating story events and climactic pursuit. Avoid presenting Walpurgis as the primary antagonist in the opening tutorial.
 
@@ -87,7 +89,7 @@ Eight distinct witches, broader tracks/events, lightweight story progression, po
 
 ## Decisions required from the owner (highest leverage first)
 
-1. **Championship-to-Walpurgis transition:** Who secretly organizes the championships to prepare witches for Walpurgisnacht, why is that purpose hidden, and what reveals the truth around 70–80% progression?
+1. **Championship-to-Walpurgis transition:** Who are the organizers, what reveals their long-running preparation around 70–80% progression, and how is the beast captured?
 2. **Winning and progression:** Are solo races time trials, AI grid races, cups, or a deliberate mix? What unlocks the next event?
 3. **Race mechanics:** Which of boost, drift, collision, items and shortcuts are essential versus explicitly out of scope?
 4. **Local multiplayer:** Is two-player split-screen sufficient for initial release, or is four-player a requirement?
