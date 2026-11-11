@@ -22,9 +22,9 @@ The championships secretly train each generation of witches to outrun Walpurgis 
 
 ### 3. Convergence — lure Walpurgis to the center
 
-**Owner direction:** A final combined race involving all participating racers draws Walpurgis into the middle of the completed circle, where the capture is triggered.
+**Confirmed owner direction:** All eight witches participate in the final combined race, drawing Walpurgis into the middle of the completed circle, where the capture is triggered. In singleplayer, the seven witches not controlled by the player are AI racers; local multiplayer can substitute human-controlled witches for some AI participants.
 
-**To prototype:** Whether the racers approach from separate routes or race together; how the chase remains fair; what explicitly triggers the binding; how solo play presents the other witches; how this scales to local multiplayer.
+**To prototype:** Whether the racers approach from separate routes or race together; meaningful roles for each witch; how the chase remains fair; what explicitly triggers the binding; and how AI and local players coordinate.
 
 ## Environmental storytelling and transitions
 
@@ -52,7 +52,7 @@ The championships secretly train each generation of witches to outrun Walpurgis 
 - Presentation consumes stage and route-completion events to animate walls, rune lighting and HUD.
 - Ghost recording and Walpurgis pursuit remain separate from authoritative checkpoint completion.
 - Test skipped gates, incorrect route order, restarts, pause/resume, failure/retry, multiple local racers and stage transitions with TDD.
-- Keep the final event achievable in singleplayer without assuming eight human players.
+- Support all eight witches in the finale: one human and seven AI racers in singleplayer; replace AI slots with humans in local multiplayer as supported. Keep AI objectives explicit and testable.
 
 ## Acceptance criteria for a future vertical prototype
 
@@ -65,7 +65,7 @@ The championships secretly train each generation of witches to outrun Walpurgis 
 
 ## Decisions still open
 
-1. Must all eight witches participate in the final convergence, including AI companions in singleplayer?
+1. How are the eight witches' objectives divided among the stages, and how should AI behave when the player fails or retries?
 2. Are inner rune routes sequential, branching, or chosen freely?
 3. Does the wall merely contain Walpurgis, or progressively restrict her movement?
 4. What constitutes success or failure in the final lure, and what happens if a racer is caught?
