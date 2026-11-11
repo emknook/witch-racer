@@ -46,6 +46,14 @@
 
 **Confirmed final-race direction:** A multi-stage sealing ritual built through racing: an enormous outer lap establishes a magical wall around Walpurgis; smaller circular/rune-shaped tracks illuminate the internal spell; a final combined race lures her into the center. Animated stage transitions and an overhead HUD schematic show completed tracks lighting up. See [multi-stage Walpurgisnacht final race](walpurgisnacht-final-race.md). Detailed race rules remain open.
 
+## Campaign opening and protagonist
+
+**Confirmed direction (2026-11-11):** The main story protagonist is **not one of the eight previously planned witches**. She begins as an enthusiastic amateur who wants to race on her broom, experimenting with it in her own shed, potentially alongside a friend. The opening should be friendly, personal and playful, rather than starting in a racing school or club. A practice run or local competition is a plausible introduction to racing; a coach or scout noticing her talent is a proposed catalyst for entry into organized competition. Progression should resemble a grassroots athlete advancing through increasingly prestigious competitions to international racing. The protagonist's specific identity, customization and exact opening sequence are open.
+
+**Character directions to explore:** A friend who may tinker with brooms and/or become a racing mechanic, a coach or scout who recognizes potential, and recurring established competitors. Do not commit to a school, club membership, permanent coach or specific relationship without further decisions.
+
+**Roster scope clarification:** The eight established witches remain the existing roster concept, but the protagonist is additional to them. Whether the protagonist becomes a ninth playable racer, and how selection works across story, time trial and multiplayer, requires an explicit design decision. Do not silently treat the original eight-character selection requirement as resolved.
+
 ## Eight witches
 
 **Confirmed:** Eight selectable witches, with blue, yellow, green, red, purple and mixed-color hair represented. Distinct silhouettes and readable low-resolution designs matter. Names, personalities, stat differences, unlocks and character-specific endings are proposals; see [characters](characters.md).
