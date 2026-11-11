@@ -44,6 +44,8 @@
 
 **Working lore, not final canon:** The Walpurgisnacht gathering, magical track markings, captured ancient creature, Wardens and thirteen seals are recorded in [Walpurgisnacht lore](walpurgisnacht.md). Avoid silently replacing this with the superseded Grand Broom Prix draft. The exact relationship between regular competitions and the recurring pursuit is unresolved.
 
+**Confirmed final-race direction:** A multi-stage sealing ritual built through racing: an enormous outer lap establishes a magical wall around Walpurgis; smaller circular/rune-shaped tracks illuminate the internal spell; a final combined race lures her into the center. Animated stage transitions and an overhead HUD schematic show completed tracks lighting up. See [multi-stage Walpurgisnacht final race](walpurgisnacht-final-race.md). Detailed race rules remain open.
+
 ## Eight witches
 
 **Confirmed:** Eight selectable witches, with blue, yellow, green, red, purple and mixed-color hair represented. Distinct silhouettes and readable low-resolution designs matter. Names, personalities, stat differences, unlocks and character-specific endings are proposals; see [characters](characters.md).
