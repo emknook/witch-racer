@@ -1,6 +1,16 @@
-# Playable racers
+# Characters and racer roster
 
-**Confirmed:** The initial target roster contains **exactly eight selectable witches**. Hair colors include blue, yellow, green, red, purple and mixed-color styles. Names, appearances, motivations, and relationships below are **proposals**, not final canon.
+## Story protagonist and supporting cast
+
+**Confirmed:** The campaign follows a female amateur witch **separate from the eight established witches**. She starts by experimenting with her broom in her shed, potentially with a friend, and advances from grassroots racing toward international championships. She does not start at a racing school or club.
+
+**Proposed:** A friend who tinkers with brooms and might become a racing mechanic or fellow competitor; a coach/scout who notices the protagonist during a practice run or local competition. These are not yet fixed characters or mandatory scenes.
+
+**Open:** Protagonist identity/customization; whether she is a ninth selectable racer; how character selection works outside the campaign; supporting cast identities and relationships.
+
+## Eight established witches
+
+**Confirmed:** Eight established witches are planned as a selectable roster concept, **in addition to the protagonist**. Hair colors include blue, yellow, green, red, purple and mixed-color styles. Names, appearances, motivations, and relationships below are **proposals**, not final canon.
 
 | Working name | Hair | Visual hook | Motivation |
 | --- | --- | --- | --- |
@@ -21,4 +31,6 @@
 - Every witch gets one concise motivation and small optional story moments; no long dialogue requirement.
 
 ## Open
-Confirm names, pronouns, personalities, visual designs, unlocks, and whether different brooms ever affect gameplay.
+Confirm names, pronouns, personalities, visual designs, unlocks, and whether different brooms ever affect gameplay. Decide how the established roster and protagonist coexist in story, time trial and multiplayer.
+
+See [campaign story](story.md) and [product vision](product-vision.md).
