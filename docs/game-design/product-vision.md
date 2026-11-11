@@ -27,7 +27,7 @@
 | Local multiplayer | Confirmed requirement | Multiple players race locally; split-screen implementation and player count remain open |
 | Ghost race | Confirmed feature direction | Replay a previous recorded run as a non-colliding visual rival |
 | Walpurgis pursuit | Confirmed feature direction | Special races where Walpurgis chases from behind, not an ordinary grid competitor |
-| Championship/story progression | Open | Cup structure, unlocks and win conditions require owner decisions |
+| Championship/story progression | Confirmed direction; mechanics open | Amateur-to-international championship journey; cup structure, unlocks and win conditions require decisions |
 | Online multiplayer | Future-compatible architecture only | Not a launch promise or MVP requirement |
 
 ## Story and tone
@@ -42,7 +42,7 @@
 
 **Confirmed:** A simple, charming story; Walpurgis features in story sequences and special races. Her chase threatens racers from behind. Recorded runs may inform her route and speed. A precisely timed normal boost during her reaching-arm grab is a proposed escape mechanic requiring validation.
 
-**Working lore, not final canon:** The Walpurgisnacht gathering, magical track markings, captured ancient creature, Wardens and thirteen seals are recorded in [Walpurgisnacht lore](walpurgisnacht.md). Avoid silently replacing this with the superseded Grand Broom Prix draft. The exact relationship between regular competitions and the recurring pursuit is unresolved.
+**Working lore, not final canon:** The Walpurgisnacht gathering, magical track markings, captured ancient creature, Wardens and thirteen seals are recorded in [Walpurgisnacht lore](walpurgisnacht.md). Avoid silently replacing this with the superseded Grand Broom Prix draft. The broad relationship between regular competitions and Walpurgisnacht is confirmed; the detailed ritual and historical lore remain open.
 
 **Confirmed final-race direction:** A multi-stage sealing ritual built through racing: an enormous outer lap establishes a magical wall around Walpurgis; smaller circular/rune-shaped tracks illuminate the internal spell; a final combined race lures her into the center. Animated stage transitions and an overhead HUD schematic show completed tracks lighting up. See [multi-stage Walpurgisnacht final race](walpurgisnacht-final-race.md). Detailed race rules remain open.
 
@@ -54,9 +54,9 @@
 
 **Roster scope clarification:** The eight established witches remain the existing roster concept, but the protagonist is additional to them. Whether the protagonist becomes a ninth playable racer, and how selection works across story, time trial and multiplayer, requires an explicit design decision. Do not silently treat the original eight-character selection requirement as resolved.
 
-## Eight witches
+## Eight established witches
 
-**Confirmed:** Eight selectable witches, with blue, yellow, green, red, purple and mixed-color hair represented. Distinct silhouettes and readable low-resolution designs matter. Names, personalities, stat differences, unlocks and character-specific endings are proposals; see [characters](characters.md).
+**Confirmed:** Eight established selectable witches, with blue, yellow, green, red, purple and mixed-color hair represented. Distinct silhouettes and readable low-resolution designs matter. Names, personalities, stat differences, unlocks and character-specific endings are proposals; see [characters](characters.md).
 
 ## Visual and audio direction
 
@@ -99,11 +99,12 @@ Eight distinct witches, broader tracks/events, lightweight story progression, po
 
 ## Decisions required from the owner (highest leverage first)
 
-1. **Championship-to-Walpurgis transition:** Who are the organizers, what reveals their long-running preparation around 70–80% progression, and how is the beast captured?
-2. **Winning and progression:** Are solo races time trials, AI grid races, cups, or a deliberate mix? What unlocks the next event?
-3. **Race mechanics:** Which of boost, drift, collision, items and shortcuts are essential versus explicitly out of scope?
-4. **Local multiplayer:** Is two-player split-screen sufficient for initial release, or is four-player a requirement?
-5. **Walpurgis consequences:** Does capture immediately fail a run, and how forgiving should the last-grasp boost be?
-6. **Content/release targets:** Target platforms, number of tracks and minimum witches available at MVP.
+1. **Campaign and character details:** Who is the protagonist and her friend, how does she enter her first competition, and how do the eight established racers relate to her?
+2. **Championship-to-Walpurgis transition:** Who are the organizers, what reveals their long-running preparation around 70–80% progression, and what are the precise rules of the final capture?
+3. **Winning and progression:** Are solo races time trials, AI grid races, cups, or a deliberate mix? What unlocks the next event?
+4. **Race mechanics:** Which of boost, drift, collision, items and shortcuts are essential versus explicitly out of scope?
+5. **Local multiplayer:** Is two-player split-screen sufficient for initial release, or is four-player a requirement?
+6. **Walpurgis consequences:** Does capture immediately fail a run, and how forgiving should the last-grasp boost be?
+7. **Content/release targets:** Target platforms, number of tracks and minimum witches available at MVP.
 
 Resolve these before expanding implementation; document choices with rationale and consequences.
