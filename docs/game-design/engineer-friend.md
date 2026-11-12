@@ -78,3 +78,5 @@ A potential arc: she begins by pursuing the perfect machine; watching her friend
 - The starting point is friendly experimentation and a practice run/local competition, not an established racing club.
 - Walpurgisnacht lore and the later pursuit remain separate narrative layers to connect once the opening and friendship are approved.
 - Character references are shorthand for *energy and motivation*, not a license to copy protected designs or dialogue.
+
+See [campaign opening and competition progression](campaign-progression.md) for proposed opening beats, mentor alternatives and progression boundaries.
