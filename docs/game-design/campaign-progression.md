@@ -102,3 +102,5 @@ Test pure policy behavior first, then persistence round trips and presentation i
 5. Whether local multiplayer shares campaign progression or remains a separate mode.
 
 No implementation or final character identity is approved by this proposal.
+
+See [protagonist and friendship arc](protagonist-and-friendship.md) for proposed character motivation, relationship beats and narrative eligibility tests.

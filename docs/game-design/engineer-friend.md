@@ -80,3 +80,5 @@ A potential arc: she begins by pursuing the perfect machine; watching her friend
 - Character references are shorthand for *energy and motivation*, not a license to copy protected designs or dialogue.
 
 See [campaign opening and competition progression](campaign-progression.md) for proposed opening beats, mentor alternatives and progression boundaries.
+
+See [protagonist and friendship arc](protagonist-and-friendship.md) for the complementary protagonist perspective and proposed relationship development.
