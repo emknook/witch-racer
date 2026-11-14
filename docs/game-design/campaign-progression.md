@@ -104,3 +104,5 @@ Test pure policy behavior first, then persistence round trips and presentation i
 No implementation or final character identity is approved by this proposal.
 
 See [protagonist and friendship arc](protagonist-and-friendship.md) for proposed character motivation, relationship beats and narrative eligibility tests.
+
+See [first rival and established racers](first-rival-and-established-racers.md) for candidate competitive relationships, gradual roster introductions and result-aware encounter tests.
