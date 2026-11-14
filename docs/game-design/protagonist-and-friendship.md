@@ -77,3 +77,5 @@ See [campaign policy and acceptance examples](campaign-progression.md), [product
 3. Which mentor introduction and recurring rival relationship best fit the opening.
 4. Whether the protagonist's growth emphasizes technique, confidence, teamwork or a combination.
 5. How the separate protagonist participates in the final sealing race while preserving all eight established witches' involvement.
+
+See [first rival and established racers](first-rival-and-established-racers.md) for candidate competitive relationships, gradual roster introductions and result-aware encounter tests.
