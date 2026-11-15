@@ -87,3 +87,5 @@ Manual review: the competitor feels like a person rather than an obstacle; both 
 - How does the separate protagonist participate in the finale without displacing any of the eight?
 
 No new canon, gameplay code or executed tests result from this proposal.
+
+See [eight-racer ensemble exploration](eight-racer-ensemble.md) for candidate individual personalities, career stages and relationships using the existing roster sketches.
