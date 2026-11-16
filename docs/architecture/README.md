@@ -4,6 +4,14 @@
 
 See [module boundaries and TDD workflow](tdd-and-module-boundaries.md) for responsibilities, incremental migration, testing standards and definition of done.
 
+## Owner-approved baseline constraints (2026-11-16)
+
+- **Track-bound hover movement:** The authoritative simulation follows defined racing courses. Track geometry, elevation and banking may influence movement, but player-controlled unrestricted flight is out of baseline scope. Keep hover/grounding and airborne steering policy isolated for testing and later tuning.
+- **Equal desktop platform support:** Windows and Linux are both baseline targets, not primary/secondary. Keyboard and gamepad input must map into the same racer-intent commands, with device-specific handling outside the simulation.
+- **CI evidence:** Maintain Windows and Linux automated project-import/smoke and deterministic rule checks. Verify platform-specific builds and actual keyboard/gamepad behavior separately; CI success alone is not a hardware acceptance test.
+
+See the [one-year roadmap](../game-design/one-year-roadmap.md) for milestone acceptance criteria.
+
 ## Principles
 - **Race simulation** owns racer movement, checkpoints, lap progression and standings.
 - **Input sources** (human local controller, AI, future network command stream) express racer intentions through a common interface.
