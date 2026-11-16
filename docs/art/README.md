@@ -1,17 +1,11 @@
 # Art direction
 
-**Confirmed:** PSX-inspired low-poly 3D assets authored in Blender.
-
-## Proposed visual rules
-- Bold silhouettes and clear hair color blocks for eight witches.
-- Readable forms at split-screen sizes; use contrasting values and strong shapes.
-- Deliberately limited geometry and texture detail, but avoid reducing usability merely for nostalgia.
-- Test actual in-engine lighting, draw distance, animation and performance before fixing polygon/texture budgets.
-- Establish Blender-to-Godot export naming, scale, pivots, materials and animation conventions through a small sample asset first.
-
-## Open
-Choose target resolution, texture filtering, vertex wobble (if any), fog, palette, lighting and exact asset budgets after prototype comparisons.
+**Confirmed:** PSX-inspired low-poly 3D assets authored in Blender. The [visual plan](visual-plan.md) is the living art-direction source of truth; it distinguishes confirmed constraints from proposals and open decisions.
 
 ## Reference boards
-- [First licensed reference board](reference-board-01.md) — early visual references for low-poly environments, track readability, night lighting and broom-flight symbolism.
-- [Drummyfish environment-filler board](environment-filler-board-02.md) — a focused follow-up for terrain, foliage, rocks, signs and landmark props, based on the selected Drummyfish reference. Images remain embedded from their source pages and are individually credited.
+
+- [First licensed reference board](reference-board-01.md) — low-poly environments, track readability, night lighting and broom-flight shorthand.
+- [Drummyfish environment-filler board](environment-filler-board-02.md) — terrain, foliage, rocks, signs and landmark props, based on the selected style anchor.
+- [Palette and materials board 03](palette-material-board-03.md) — a focused forest-route light and ground-material study.
+
+These boards use web-sourced references with linked source pages and license details. Reference images are not approved in-game assets; see each board for reuse terms and attribution notes.
