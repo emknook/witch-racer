@@ -3,6 +3,7 @@
 ## Start here
 
 - [Product vision and release scope](product-vision.md) — canonical product goals, confirmed campaign direction, proposed milestones and unresolved scope.
+- [One-year playable-baseline roadmap](one-year-roadmap.md) — November 2026–November 2027 milestone gates, 4–6 hours/week capacity, acceptance criteria and scope controls.
 - [Story and setting](story.md) — amateur beginnings, championship progression and the Walpurgisnacht reveal.
 - [Characters and roster](characters.md) — protagonist versus eight established witches, proposed identities and supporting roles.
 - [Walpurgisnacht final race](walpurgisnacht-final-race.md) — multi-stage magical sealing race and overhead spell UI.
