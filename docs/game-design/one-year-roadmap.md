@@ -10,9 +10,9 @@ See [product vision](product-vision.md), [game-design index](README.md), [archit
 By November 2027, another person should be able to launch a build, select a playable witch, race a complete marked circuit alone or against basic AI, finish and see results, retry, and play a local two-player race with independent controls and readable views. The game should feel responsive and recognizable as a PSX-inspired broom racer, not just a technical sandbox.
 
 **Baseline acceptance checklist**
-- [ ] Launchable and reproducible desktop build on an agreed primary platform; documented controls and setup.
+- [ ] Launchable and reproducible desktop builds on **Windows and Linux**, with documented controls and setup; verify builds on both platforms.
 - [ ] One finished, readable track with start, ordered checkpoints, laps, boundaries and clear race completion.
-- [ ] Responsive broom handling and camera, tuned through human playtests; keyboard and controllers supported as agreed.
+- [ ] Responsive **track-bound hover-racer** broom handling and camera, tuned through human playtests; **keyboard and gamepad** input supported on Windows and Linux.
 - [ ] Solo time trial with valid timing, HUD, finish/results and restart/retry.
 - [ ] At least one basic AI opponent completes the same track using the same racing rules and can be raced against.
 - [ ] Two-player local multiplayer with separate input mappings, split-screen/readable cameras and race results.
@@ -64,7 +64,7 @@ By November 2027, another person should be able to launch a build, select a play
 | Limited weekly hours and competing commitments | Track actual effort monthly; defer cosmetics/content before core race completion |
 | Handling does not feel enjoyable despite passing tests | Short hands-on playtests every milestone; tune using observations, not only CI |
 | AI pathing takes longer than expected | Begin with simple waypoint/track-following AI and one opponent; avoid advanced tactics |
-| Split-screen performance or camera readability | Prototype two viewports early; define minimum hardware/platform before polishing |
+| Split-screen performance or camera readability | Prototype two viewports early; profile representative Windows and Linux hardware before polishing |
 | Story/art scope expands beyond baseline | Use one representative witch and one track; retain shed and Walpurgis work as post-baseline |
 | Determinism or engine upgrades break replay | Version race rules and fixtures; verify latest stable Godot compatibility before upgrading |
 | Stacked PR chain becomes hard to review | Small branches, clear parent links and regular base reconciliation after merges |
@@ -77,9 +77,14 @@ By November 2027, another person should be able to launch a build, select a play
 4. Early championship progression UI and narrative scenes.
 5. Walpurgis chase prototype, separate from the full sealing finale.
 
-## Next two owner decisions
+## Confirmed handling and platform decisions (2026-11-16)
 
-1. **Handling:** For the first racing prototype, should the broom behave like a track-bound hover racer with banking and jumps, or allow more active vertical flight while still following a defined course? Recommend track-bound hover handling initially to control camera and collision complexity.
-2. **Initial platform and controls:** Should the November 2027 baseline prioritize Windows + gamepads, Linux + keyboard/gamepads, or equal Windows/Linux desktop support from the start? Recommend selecting one primary playtest platform and maintaining automated smoke coverage on both.
+- **Handling:** Track-bound hover racing, F-Zero-inspired. Brooms follow defined courses; banking, jumps and track elevation are compatible with the direction. Unrestricted vertical flight is not a baseline requirement. Exact hover forces, jump control, steering assistance and collision rules still need prototyping.
+- **Platforms:** Windows and Linux have **equal priority**. Both keyboard and gamepad input are required, with CI coverage for both platforms. CI must include automated project import/smoke and deterministic tests where supported; release-build checks and manual device testing are separate acceptance evidence. Do not assume green CI proves input-device behavior.
 
-These are unresolved and should be asked before starting the next implementation cycle.
+## Questions for the next owner-approved cycle
+
+1. **Handling feel:** Should the broom automatically align to the track surface with limited airborne control, or preserve more manual midair steering while remaining track-bound? This affects camera, landing and input semantics.
+2. **First demonstrable slice:** Should the next implementation increment prioritize a playable greybox steering/camera test, or an automated cross-platform import-and-input smoke-test baseline? Recommend verifying the current repository and CI state first, then selecting the smallest evidence-producing increment.
+
+Wait for answers to both questions and explicit approval before starting another repository task.
