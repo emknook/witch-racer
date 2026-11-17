@@ -4,6 +4,13 @@ extends Node3D
 const Simulation = preload("res://simulation/race_simulation.gd")
 const TRACK_SEGMENTS := Simulation.SEGMENTS
 const HALF_WIDTH := Simulation.HALF_WIDTH / 1000.0
+const CAMERA_SMOOTHING := 5.0
+const CAMERA_LOOK_AHEAD := 6.0
+const CAMERA_STEER_LOOK := 2.0
+const CAMERA_BASE_DISTANCE := 9.0
+const CAMERA_SPEED_DISTANCE := 4.0
+const CAMERA_BASE_HEIGHT := 5.0
+const CAMERA_SPEED_HEIGHT := 1.5
 
 var simulation := Simulation.new()
 var racer: Node3D
@@ -86,10 +93,25 @@ func _animate_lean(delta: float) -> void:
     body.rotation.z = lerpf(body.rotation.z, _visual_steering * 0.25, smoothing)
 
 func _follow_racer(delta: float) -> void:
-    var forward := Vector3(sin(racer.rotation.y), 0.0, cos(racer.rotation.y))
-    var target := racer.position - forward * 10.0 + Vector3.UP * 5.5
-    camera.global_position = camera.global_position.lerp(target, minf(1.0, 5.0 * delta))
-    camera.look_at(racer.position + forward * 5.0 + Vector3.UP * 1.1)
+    var forward := _racer_forward()
+    var speed_ratio := _speed_ratio()
+    var distance := CAMERA_BASE_DISTANCE + CAMERA_SPEED_DISTANCE * speed_ratio
+    var height := CAMERA_BASE_HEIGHT + CAMERA_SPEED_HEIGHT * speed_ratio
+    var target := racer.position - forward * distance + Vector3.UP * height
+    var smoothing := 1.0 - exp(-CAMERA_SMOOTHING * delta)
+    camera.global_position = camera.global_position.lerp(target, smoothing)
+    camera.look_at(_camera_focus(forward))
+
+func _camera_focus(forward: Vector3) -> Vector3:
+    var right := Vector3(forward.z, 0.0, -forward.x)
+    var anticipation := right * _visual_steering * CAMERA_STEER_LOOK
+    return racer.position + forward * CAMERA_LOOK_AHEAD + anticipation + Vector3.UP
+
+func _racer_forward() -> Vector3:
+    return Vector3(sin(racer.rotation.y), 0.0, cos(racer.rotation.y))
+
+func _speed_ratio() -> float:
+    return clampf(float(simulation.speed) / float(Simulation.MAX_SPEED), 0.0, 1.0)
 
 func _update_hud() -> void:
     var speed_kmh := float(simulation.speed) * 3.6 / (Simulation.TICKS_PER_SECOND * 1000)
@@ -256,8 +278,9 @@ func _create_chase_camera() -> void:
     camera = Camera3D.new()
     camera.current = true
     camera.fov = 80.0
-    var forward := Vector3(sin(_current_heading), 0.0, cos(_current_heading))
-    camera.position = racer.position - forward * 10.0 + Vector3.UP * 5.5
+    var forward := _racer_forward()
+    camera.position = racer.position - forward * CAMERA_BASE_DISTANCE + Vector3.UP * CAMERA_BASE_HEIGHT
+    camera.look_at(_camera_focus(forward))
     add_child(camera)
 
 func _create_hud() -> void:
